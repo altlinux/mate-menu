@@ -703,8 +703,6 @@ class pluginclass( object ):
                                 i.hide()
                                 dupe = True
                                 break
-                        if dupe:
-                            i.hide()
                         if not dupe:
                             shownList.append(i)
                             # Remove application from list so that we can re-add it in order
