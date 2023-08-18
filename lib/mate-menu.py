@@ -85,9 +85,9 @@ class MainWindow( object ):
         self.window.realize()
         self.window.get_window().set_decorations(Gdk.WMDecoration.BORDER)
         self.window.set_title('Advanced MATE Menu')
-        self.window.set_app_paintable(True)
+        # self.window.set_app_paintable(True)
 
-        self.window.connect("draw", self.onWindowDraw)
+        # self.window.connect("draw", self.onWindowDraw)
         self.window.connect("key-press-event", self.onWindowKeyPress)
         self.window.connect("focus-in-event", self.onWindowFocusIn)
         self.loseFocusId = self.window.connect("focus-out-event", self.onWindowFocusOut)
