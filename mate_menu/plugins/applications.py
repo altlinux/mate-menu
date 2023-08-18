@@ -1396,7 +1396,7 @@ class pluginclass( object ):
             # Find added and removed categories than update the category list
             newCategoryList = self.buildCategoryList()
             addedCategories = []
-            removedCategories = []
+            NotRemovedCategoriesInd = []
 
             # TODO: optimize this!!!
             if not self.categoryList:
@@ -1404,36 +1404,27 @@ class pluginclass( object ):
             else:
                 for item in newCategoryList:
                     found = False
-                    for item2 in self.categoryList:
-                        pass
+                    for j, item2 in enumerate(self.categoryList):
                         if item["name"] == item2["name"] and item["icon"] == item2["icon"] and item["tooltip"] == item2["tooltip"] and item["index"] == item2["index"]:
                             found = True
+                            NotRemovedCategoriesInd.append(j)
                             break
                     if not found:
                         addedCategories.append(item)
-
-                for item in self.categoryList:
-                    found = False
-                    for item2 in newCategoryList:
-                        if item["name"] == item2["name"] and item["icon"] == item2["icon"] and item["tooltip"] == item2["tooltip"] and item["index"] == item2["index"]:
-                            found = True
-                            break
-                    if not found:
-                        removedCategories.append( item )
+                    
+                k = 0 #нужен, тк при удалении элемента из списка индексы смещаются вниз
+                for i in list(set(range(len(self.categoryList)))-set(NotRemovedCategoriesInd)):
+                    try:
+                        self.categoryList[i-k]['button'].destroy()
+                        self.categoryList.pop(i-k)
+                        k += 1
+                    except Exception as e:
+                        print(e)
 
             if self.showcategoryicons == True:
                 categoryIconSize = self.iconSize
             else:
                 categoryIconSize = 0
-
-            for item in removedCategories:
-                try:
-                    button = item["button"]
-                    self.categoryList.remove(item)
-                    button.destroy()
-                    del item
-                except Exception as e:
-                    print(e)
 
             if addedCategories:
                 sortedCategoryList = []
@@ -1477,7 +1468,7 @@ class pluginclass( object ):
             # Find added and removed applications add update the application list
             newApplicationList = self.buildApplicationList()
             addedApplications = []
-            removedApplications = []
+            NotRemovedApplicationsInd = []
 
             # TODO: optimize this!!!
             if not self.applicationList:
@@ -1485,31 +1476,19 @@ class pluginclass( object ):
             else:
                 for item in newApplicationList:
                     found = False
-                    for item2 in self.applicationList:
+                    for j, item2 in enumerate(self.applicationList):
                         if item["entry"].get_desktop_file_path() == item2["entry"].get_desktop_file_path():
                             found = True
+                            NotRemovedApplicationsInd.append(j)
                             break
                     if not found:
                         addedApplications.append(item)
-
-                key = 0
-                for item in self.applicationList:
-                    found = False
-                    for item2 in newApplicationList:
-                        if item["entry"].get_desktop_file_path() == item2["entry"].get_desktop_file_path():
-                            found = True
-                            break
-                    if not found:
-                        removedApplications.append(key)
-                    else:
-                        # don't increment the key if this item is going to be removed
-                        # because when it is removed the index of all later items is
-                        # going to be decreased
-                        key += 1
-
-            for key in removedApplications:
-                self.applicationList[key]["button"].destroy()
-                del self.applicationList[key]
+                
+                k = 0
+                for i in list(set(range(len(self.applicationList)))-set(NotRemovedApplicationsInd)):
+                    self.applicationList[i-k]['button'].destroy()
+                    self.applicationList.pop(i-k)
+                    k += 1
 
             if addedApplications:
                 sortedApplicationList = []
