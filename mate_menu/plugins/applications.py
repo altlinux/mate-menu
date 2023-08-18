@@ -692,7 +692,7 @@ class pluginclass( object ):
                 if self.lastActiveTab != 1:
                     self.changeTab( 1, clear = False )
                 text = widget.get_text()
-                showns = False # Are any app shown?
+
                 shownList = []
                 for i in self.applicationsBox.get_children():
                     shown = i.filterText( text )
@@ -700,15 +700,17 @@ class pluginclass( object ):
                         dupe = False
                         for item in shownList:
                             if i.desktopFile == item.desktopFile:
+                                i.hide()
                                 dupe = True
+                                break
                         if dupe:
                             i.hide()
-                        else:
+                        if not dupe:
                             shownList.append(i)
                             # Remove application from list so that we can re-add it in order
                             self.applicationsBox.remove(i)
-                            showns = True
-                if not showns:
+
+                if not len(shownList):
                     if len(text) >= 3:
                         self.add_search_suggestions(text)
                         self.current_suggestion = text
@@ -719,15 +721,13 @@ class pluginclass( object ):
                     # Sort applications by relevance, and alphabetical within that
                     shownList = sorted(shownList, key=lambda app: app.appName)
                     shownList = sorted(shownList, key=lambda app: app.relevance, reverse=True)
-                    focused = False
+
+                    GLib.timeout_add(20, shownList[0].grab_focus)
                     for i in shownList:
                         self.applicationsBox.add(i)
-                        if not focused:
-                            # Grab focus of the first app shown
-                            GLib.timeout_add(20, i.grab_focus)
-                            focused = True
+
                     if self.alwaysshowsearch:
-                        self.add_search_suggestions(text, focused)
+                        self.add_search_suggestions(text, bool(len(shownList)))
                         self.current_suggestion = text
                     else:
                         self.current_suggestion = None
