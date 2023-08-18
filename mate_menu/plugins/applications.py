@@ -319,7 +319,7 @@ class pluginclass( object ):
 
         self.builder.get_object("searchButton").connect( "button-press-event", self.searchPopup )
 
-        self.icon_theme = Gtk.IconTheme.get_default();
+        self.icon_theme = Gtk.IconTheme.get_default()
         self.icon_theme.connect("changed", self.on_icon_theme_changed)
 
     def get_panel(self):
@@ -734,11 +734,10 @@ class pluginclass( object ):
                 for i in self.categoriesBox.get_children():
                     i.set_relief( Gtk.ReliefStyle.NONE )
 
-                allButton = self.categoriesBox.get_children()[0];
+                allButton = self.categoriesBox.get_children()[0]
                 allButton.set_relief( Gtk.ReliefStyle.HALF )
                 self.activeFilter = (0, text, widget)
         else:
-            #print("CATFILTER")
             self.activeFilter = (1, category, widget)
             if category == "":
                 listedDesktopFiles = []
@@ -1350,8 +1349,8 @@ class pluginclass( object ):
             appListFile.close( )
         except Exception as e:
             msgDlg = Gtk.MessageDialog( None, Gtk.DialogFlags.MODAL, Gtk.MessageType.ERROR, Gtk.ButtonsType.OK, _("Couldn't save favorites. Check if you have write access to ~/.config/mate-menu")+"\n(" + e.__str__() + ")" )
-            msgDlg.run();
-            msgDlg.destroy();
+            msgDlg.run()
+            msgDlg.destroy()
 
     def isLocationInFavorites( self, location ):
         for fav in self.favorites:
@@ -1379,7 +1378,6 @@ class pluginclass( object ):
         self.menuChangedTimer = GLib.timeout_add( 1000, self.updateBoxes, True )
 
     def updateBoxes( self, menu_has_changed ):
-        # FIXME: This is really bad!
         if self.rebuildLock:
             return
 
@@ -1396,7 +1394,6 @@ class pluginclass( object ):
             addedCategories = []
             NotRemovedCategoriesInd = []
 
-            # TODO: optimize this!!!
             if not self.categoryList:
                 addedCategories = newCategoryList
             else:
@@ -1468,7 +1465,6 @@ class pluginclass( object ):
             addedApplications = []
             NotRemovedApplicationsInd = []
 
-            # TODO: optimize this!!!
             if not self.applicationList:
                 addedApplications = newApplicationList
             else:
@@ -1538,7 +1534,14 @@ class pluginclass( object ):
 
     # Build a list of all categories in the menu ( [ { "name", "icon", tooltip" } ]
     def buildCategoryList( self ):
-        newCategoryList = [ { "name": _("All"), "icon": "edit-select-all", "tooltip": _("Show all applications"), "filter":"", "index": 0 } ]
+        newCategoryList = [
+            { 
+                "name": _("All"), 
+                "icon": "edit-select-all", 
+                "tooltip": _("Show all applications"), 
+                "filter":"", "index": 0
+            }
+        ]
 
         num = 1
 
@@ -1560,7 +1563,6 @@ class pluginclass( object ):
         def find_applications_recursively(app_list, directory, catName):
             for item in get_contents(directory):
                 if isinstance(item, MateMenu.TreeEntry):
-                    #print("=======>>> " + str(item.get_name()) + " = " + str(catName))
                     app_list.append( { "entry": item, "category": catName } )
                 elif isinstance(item, MateMenu.TreeDirectory):
                     find_applications_recursively(app_list, item, catName)
@@ -1570,20 +1572,10 @@ class pluginclass( object ):
             for entry in get_contents(directory):
                 if isinstance(entry, MateMenu.TreeDirectory):
                     entrycontents = get_contents(entry)
-                    #Entry is a top-level category
-                    #catName = entry.get_name()
-                    #icon = entry.get_icon().to_string()
-                    #if (icon == "applications-system" or icon == "applications-other"):
-                    #       catName = self.adminMenu
                     if len(entrycontents):
                         for item in entrycontents:
                             if isinstance(item, MateMenu.TreeDirectory):
                                 find_applications_recursively(newApplicationsList, item, entry.get_name())
                             elif isinstance(item, MateMenu.TreeEntry):
                                 newApplicationsList.append( { "entry": item, "category": entry.get_name() } )
-                #elif isinstance(entry, MateMenu.TreeEntry):
-                #       if not (entry.get_is_excluded() or entry.get_is_nodisplay()):
-                #               print("=======>>> " + item.get_name() + " = top level")
-                #               newApplicationsList.append( { "entry": item, "category": "" } )
-
         return newApplicationsList
