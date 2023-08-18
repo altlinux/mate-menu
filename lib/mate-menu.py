@@ -390,6 +390,8 @@ class MainWindow( object ):
         return False
 
     def show( self ):
+        tmp = self.window.get_size()
+        ourWidth, ourHeigth = tmp[0], tmp[1] + self.offset
         self.window.present()
 
         # Hack for opacity not showing on first composited draw
@@ -407,6 +409,7 @@ class MainWindow( object ):
             if (self.startWithFavorites):
                 self.plugins["applications"].changeTab(0)
             self.plugins["applications"].focusSearchEntry()
+        return ourWidth, ourHeigth
 
     def hide( self ):
         for plugin in self.plugins.values():
@@ -459,7 +462,7 @@ class MenuWin( object ):
         self.mainwin = MainWindow(self.button_box, self.settings)
         self.mainwin.window.connect( "map-event", self.onWindowMap )
         self.mainwin.window.connect( "unmap-event", self.onWindowUnmap )
-        self.mainwin.window.connect( "size-allocate", lambda *args: self.positionMenu() )
+        # self.mainwin.window.connect( "size-allocate", lambda *args: self.positionMenu() )
 
         self.mainwin.window.set_name("mate-menu") # Name used in Gtk RC files
         self.applyTheme()
@@ -677,18 +680,14 @@ class MenuWin( object ):
         if self.applet.get_style_context().get_state() & Gtk.StateFlags.SELECTED:
             self.mainwin.hide()
         else:
-            self.positionMenu()
-            self.mainwin.show()
+            ourWidth, ourHeight  = self.mainwin.show()
+            self.positionMenu(ourWidth, ourHeight)
             self.wakePlugins()
 
     def wakePlugins( self ):
         self.mainwin.wakePlugins()
 
-    def positionMenu( self ):
-        # Get our own dimensions & position
-        ourWidth  = self.mainwin.window.get_size()[0]
-        ourHeight = self.mainwin.window.get_size()[1] + self.mainwin.offset
-
+    def positionMenu( self, ourWidth, ourHeight ):
         # Get the dimensions/position of the widgetToAlignWith
         try:
             entryX = self.applet.get_window().get_origin().x
