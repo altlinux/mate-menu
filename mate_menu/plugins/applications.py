@@ -1570,17 +1570,19 @@ class pluginclass( object ):
         for menu in self.menuFiles:
             directory = menu.directory
             for entry in get_contents(directory):
-                if isinstance(entry, MateMenu.TreeDirectory) and len(get_contents(entry)):
+                if isinstance(entry, MateMenu.TreeDirectory):
+                    entrycontents = get_contents(entry)
                     #Entry is a top-level category
                     #catName = entry.get_name()
                     #icon = entry.get_icon().to_string()
                     #if (icon == "applications-system" or icon == "applications-other"):
                     #       catName = self.adminMenu
-                    for item in get_contents(entry):
-                        if isinstance(item, MateMenu.TreeDirectory):
-                            find_applications_recursively(newApplicationsList, item, entry.get_name())
-                        elif isinstance(item, MateMenu.TreeEntry):
-                            newApplicationsList.append( { "entry": item, "category": entry.get_name() } )
+                    if len(entrycontents):
+                        for item in entrycontents:
+                            if isinstance(item, MateMenu.TreeDirectory):
+                                find_applications_recursively(newApplicationsList, item, entry.get_name())
+                            elif isinstance(item, MateMenu.TreeEntry):
+                                newApplicationsList.append( { "entry": item, "category": entry.get_name() } )
                 #elif isinstance(entry, MateMenu.TreeEntry):
                 #       if not (entry.get_is_excluded() or entry.get_is_nodisplay()):
                 #               print("=======>>> " + item.get_name() + " = top level")
