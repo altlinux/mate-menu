@@ -192,8 +192,8 @@ class pluginclass( object ):
     TARGET_TYPE_TEXT = 80
     toButton = ( Gtk.TargetEntry.new( "text/uri-list", 0, TARGET_TYPE_TEXT ), Gtk.TargetEntry.new( "text/uri-list", 0, TARGET_TYPE_TEXT ) )
     TARGET_TYPE_FAV = 81
-    toFav = ( Gtk.TargetEntry.new( "FAVORITES", Gtk.TargetFlags.SAME_APP, 81 ), Gtk.TargetEntry.new( "text/plain", 0, 100 ), Gtk.TargetEntry.new( "text/uri-list", 0, 101 ) )
-    fromFav = ( Gtk.TargetEntry.new( "FAVORITES", Gtk.TargetFlags.SAME_APP, 81 ), Gtk.TargetEntry.new( "FAVORITES", Gtk.TargetFlags.SAME_APP, 81 ) )
+    toFav = (Gtk.TargetEntry.new("text/plain", Gtk.TargetFlags.SAME_APP, 81), Gtk.TargetEntry.new("text/plain", 0, 100), Gtk.TargetEntry.new("text/uri-list", 0, 101))
+    fromFav = (Gtk.TargetEntry.new("text/plain", Gtk.TargetFlags.SAME_APP, 81),  Gtk.TargetEntry.new("text/plain", Gtk.TargetFlags.SAME_APP, 81))
 
     def __init__(self, mateMenuWin, toggleButton):
         self.mateMenuWin = mateMenuWin
@@ -1361,11 +1361,11 @@ class pluginclass( object ):
 
     def on_drag_data_received( self, widget, context, x, y, selection, info, time ):
         if info == self.TARGET_TYPE_FAV:
-            self.favoritesReorder( int(selection.get_data()), widget.position )
+            self.favoritesReorder(int(selection.get_data().decode()), widget.position)
 
     def on_drag_data_get( self, widget, context, selection, targetType, time ):
         if targetType == self.TARGET_TYPE_FAV:
-            selection.set(Gdk.SELECTION_CLIPBOARD, 8, str(widget.position))
+            selection.set_text(str(widget.position), -1)
 
     def on_icon_theme_changed(self, theme):
         self.menuChanged (0, 0)
